@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Recipe, Diet, Intolerance
+from .models import User, Diet, Intolerance
 
 class UserSerializer(serializers.ModelSerializer): # inherits from serializers.ModelSerializer, ModelSerializer: Automatically generates fields based on the Django model.
 
@@ -25,16 +25,14 @@ class UserSerializer(serializers.ModelSerializer): # inherits from serializers.M
         allow_null=True,
         required=False 
     )
-    saved_recipes = serializers.PrimaryKeyRelatedField(
-        many=True, 
-        queryset=Recipe.objects.all(),
-        allow_null=True,
+
+    # Handle lists of integers for recipes
+    saved_recipes = serializers.ListField( #  This field type is used when you want to accept (or output) a list/array of items.
+        child=serializers.IntegerField(), # This tells DRF that each item in the list must be an integer. It will validate that every element in the list is indeed an integer.
         required=False
     )
-    liked_recipes = serializers.PrimaryKeyRelatedField(
-        many=True, 
-        queryset=Recipe.objects.all(),
-        allow_null=True,
+    liked_recipes = serializers.ListField(
+        child=serializers.IntegerField(), 
         required=False
     )
     
@@ -48,7 +46,7 @@ class UserSerializer(serializers.ModelSerializer): # inherits from serializers.M
 
 
     """
-    FIXED ERROR, our user serializer has more than username and password fields, so for creation only set up those
+    FIXED ERROR, our user serializer has more than username and password fields, so for creation only set up those two
     """
     # Implementing method that will be called when we want to create a new version of this user,  create method so it only processes username and password
     def create(self, validated_data): # accept validated data that has already passed all checks the serializer does for us, looking for valid username and password
@@ -76,10 +74,3 @@ class IntoleranceSerializer(serializers.ModelSerializer):
         model = Intolerance
         fields = ["id", "name"]
         extra_kwargs = {"name": {"read_only":True}}
-
-
-class RecipeSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Recipe
-        fields = ["id", "recipe_id"]

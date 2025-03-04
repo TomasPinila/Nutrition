@@ -2,12 +2,6 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
-class Recipe(models.Model):
-    recipe_id = models.IntegerField(null=False) 
-
-    def __str__(self):
-        return f"Recipe {self.recipe_id}"
-
 class Intolerance(models.Model):
     name = models.CharField(max_length=100, unique=True)
 
@@ -23,8 +17,8 @@ class Diet(models.Model):
     
 # Create your models here.
 class User(AbstractUser):
-    saved_recipes = models.ManyToManyField(Recipe, blank=True, related_name="users_saved")
-    liked_recipes = models.ManyToManyField(Recipe, blank=True, related_name="users_liked")
+    saved_recipes = models.JSONField(default=list, blank=True) # It can store lists of integers (or other JSON-serializable objects) and is a good alternative when you don't need PostgreSQL’s ArrayField.
+    liked_recipes = models.JSONField(default=list, blank=True)
     intolerances = models.ManyToManyField(Intolerance, blank=True)
     diet = models.ForeignKey(Diet, blank=True, null=True, on_delete=models.CASCADE)
 

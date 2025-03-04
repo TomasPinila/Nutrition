@@ -1,7 +1,8 @@
 from django.shortcuts import render
-from .models import User, Recipe, Diet, Intolerance
+from .models import User, Diet, Intolerance
 from rest_framework import generics, status # Import generic views for common CRUD operations
-from .serializers import UserSerializer, DietSerializer, RecipeSerializer, IntoleranceSerializer
+from rest_framework.views import APIView
+from .serializers import UserSerializer, DietSerializer, IntoleranceSerializer
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, AllowAny
 from rest_framework.response import Response
 
@@ -54,38 +55,67 @@ class Diets(generics.ListAPIView):
 """""
     View for listing all user's saved recipes
 """""
-class UserSavedRecipes(generics.ListAPIView):
-    serializer_class = Recipe
+class UserSavedRecipes(APIView):
     permission_classes = [IsAuthenticated]
 
-    def queryset(self):
+    def get(self, request):
         #TODO: Retrieve basic info about recipes from API
-        user = self.request.user
-        return user.saved_recipes.all()
+        user = request.user
+        # return user.saved_recipes.all() Previously, when you had a ManyToManyField, calling user.saved_recipes.all() returned a queryset of related Recipe objects.
+        return Response(user.saved_recipes) # Now, after switching to an ArrayField that stores a list of integers, user.saved_recipes is simply a Python list, and it doesn't have an .all() method. Therefore, returning Response(user.saved_recipes) directly sends the list of recipe IDs as JSON.
 
 
 """""
     View for listing all user's liked recipes
 """""
-class UserLikedRecipes(generics.ListAPIView):
-    serializer_class = Recipe
+class UserLikedRecipes(APIView):
     permission_classes = [IsAuthenticated]
 
-    def queryset(self):
+    def get(self, request):
         #TODO: Retrieve basic info about recipes from API
-        user = self.request.user
-        return user.liked_recipes.all()
+        user = request.user
+        return Response(user.liked_recipes) 
 
 
 
 """""
-    View for listing a specific intolerance and destroying a particular one
+    View for listing a specific intolerance, adding and destroying a particular one from user, listing is only for learning purposes, we won't use it irl
 """""
-class IntoleranceDetail(generics.RetrieveDestroyAPIView): # Works also for adding intolerances
+class IntoleranceDetail(generics.RetrieveUpdateDestroyAPIView): 
     queryset = Intolerance.objects.all()
     serializer_class = IntoleranceSerializer
     permission_classes = [IsAuthenticatedOrReadOnly] # will ensure that authenticated requests get read-write access, and unauthenticated requests get read-only access.
     # We don't need the IsAuthenticatedOrReadOnly, or even the Retrieve, because this is a functionality only for signed in users, but we're learning so who cares, useful for checking rest api tho
+
+    def update(self, request, *args, **kwargs):
+        user = self.request.user
+        # Expecting the request data to include the new diet id in body
+        new_intolerance_id = request.data.get('intolerance_id') 
+
+        if not new_intolerance_id:
+            return Response({"error": "Intolerance ID is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Fetch the new diet based on the intolerance_id from the request
+        try:
+            new_intolerance = Intolerance.objects.get(id=new_intolerance_id)
+        except Intolerance.DoesNotExist:
+            raise NotFound(detail="Intolerance not found.")
+        
+        # Check if the intolerance already in user's intolerance
+        if new_intolerance in user.intolerances.all():
+            return Response(
+                {"error": "Provided intolerance is already assigned intolerance."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Associate the new diet with the user
+        user.intolerances.add(new_intolerance)
+        user.save()  # Save the user with the new intolerance
+
+        # Return the updated diet data
+        serializer = self.get_serializer(user.intolerances)
+        return Response(serializer.data)
+    
 
     def destroy(self, request, *args, **kwargs):
 
@@ -95,7 +125,17 @@ class IntoleranceDetail(generics.RetrieveDestroyAPIView): # Works also for addin
         """
 
         user = self.request.user
-        intolerance = self.get_object() # .get_object() you avoid having to manually fetch the ID from the request data, and you ensure the lookup uses the URL parameter. already returns the Intolerance instance (or raises a 404 if not found). 
+        # Expecting the request data to include the new diet id in body
+        new_intolerance_id = request.data.get('intolerance_id') 
+
+        if not new_intolerance_id:
+            return Response({"error": "Intolerance ID is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Fetch the new diet based on the intolerance_id from the request
+        try:
+            intolerance = Intolerance.objects.get(id=new_intolerance_id)
+        except Intolerance.DoesNotExist:
+            raise NotFound(detail="Intolerance not found.") 
         
         # Check if the diet id provided matches the user's current intolerance
         if intolerance not in user.intolerances.all():
@@ -105,7 +145,7 @@ class IntoleranceDetail(generics.RetrieveDestroyAPIView): # Works also for addin
             )
     
         # Instead of deleting the instance from the database, remove it from the user's intolerances:
-        self.request.user.intolerances.remove(intolerance) # Return a response with HTTP 204 No Content status to indicate successful removal.
+        user.intolerances.remove(intolerance) # Return a response with HTTP 204 No Content status to indicate successful removal.
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
@@ -123,29 +163,28 @@ class UserDiet(generics.RetrieveUpdateDestroyAPIView):
     def update(self, request, *args, **kwargs):
         user = self.request.user
         # Expecting the request data to include the new diet id in url
-        diet = self.get_object() 
+        new_diet_id = request.data.get('diet_id') 
 
         # If the user doesn't have a diet, or has one but wants to change it, create one using the id sent
-        # Associate the found Diet with the user (switching diets or setting one for the first time).
-        user.diet = diet
-        user.save()  # Make sure to call save() to persist the change.
-        
-        # Return the updated diet data.
+        if not new_diet_id:
+            return Response({"error": "Diet ID is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Fetch the new diet based on the diet_id from the request
+        try:
+            new_diet = Diet.objects.get(id=new_diet_id)
+        except Diet.DoesNotExist:
+            raise NotFound(detail="Diet not found.")
+
+        # Associate the new diet with the user
+        user.diet = new_diet
+        user.save()  # Save the user with the new diet
+
+        # Return the updated diet data
         serializer = self.get_serializer(user.diet)
         return Response(serializer.data)
     
     def delete(self, request, *args, **kwargs):
         user = self.request.user
-        # Expecting the request data to include the new diet id, e.g., {"id": 3}
-        diet = self.get_object() 
-
-        # Check if the diet id provided matches the user's current diet
-        if user.diet.id != diet.id:
-            return Response(
-                {"error": "Provided diet id does not match user's assigned diet."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        
         
         # Remove the diet association from the user by setting it to None, method is used for many-to-many relationships, not for a ForeignKey
         user.diet = None
@@ -156,43 +195,63 @@ class UserDiet(generics.RetrieveUpdateDestroyAPIView):
     
 
 """""
-    View for listing a specific saved recipe and destroying a particular one
+    View for adding or removing a specific saved recipe ID. 
+    Since the recipes are now stored as simple lists of integers rather than as related model instances with a QuerySet interface, we can’t rely on generic views (like ListAPIView or RetrieveUpdateDestroyAPIView) which are designed to work with QuerySets. 
+    The APIView gives you the flexibility to manually handle the logic (e.g., GET, POST, DELETE) without expecting a queryset.
 """""
-class UserSavedRecipeDetail(generics.RetrieveDestroyAPIView): # Works also for adding intolerances
-    serializer_class = RecipeSerializer
+class UserSavedRecipeDetail(APIView): 
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        #TODO: make API call to retrieve recipe and its details, with a function ofc, create it man
-        user = self.request.user
-        return user.saved_recipes.all()
-    
-    def destroy(self, request, *args, **kwargs):
+   # To add a recipe id to the user's saved_recipes
+    def post(self, request, recipe_id):
+        user = request.user
+        if recipe_id in user.saved_recipes:
+            return Response(
+                {"error": "Recipe already saved."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        user.saved_recipes.append(recipe_id)
+        user.save()
+        return Response(user.saved_recipes, status=status.HTTP_201_CREATED)
 
-        user = self.request.user
-        recipe = self.get_object()
-
-        # Instead of deleting the instance from the database, remove it from the user's intolerances:
-        self.request.user.saved_recipes.remove(recipe) # Return a response with HTTP 204 No Content status to indicate successful removal.
+    # To remove a recipe id from the user's saved_recipes
+    def delete(self, request, recipe_id):
+        user = request.user
+        if recipe_id not in user.saved_recipes:
+            return Response(
+                {"error": "Recipe not found in saved recipes."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        user.saved_recipes.remove(recipe_id)
+        user.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-
 """""
-    View for listing a specific liked recipe and destroying a particular one
+    View for adding or removing a specific liked recipe ID
 """""
-class UserLikedRecipeDetail(generics.RetrieveDestroyAPIView): # Works also for adding intolerances
-    serializer_class = RecipeSerializer
+class UserLikedRecipeDetail(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        #TODO: make API call to retrieve recipe and its details, with a function ofc, create it man
-        user = self.request.user
-        return user.liked_recipes.all()
-    
-    def destroy(self, request, *args, **kwargs):
-        user = self.request.user
-        recipe = self.get_object()
-    
-        # Instead of deleting the instance from the database, remove it from the user's intolerances:
-        self.request.user.liked_recipes.remove(recipe) # Return a response with HTTP 204 No Content status to indicate successful removal.
+    # To add a recipe id to the user's liked_recipes
+    def post(self, request, recipe_id):
+        user = request.user
+        if recipe_id in user.liked_recipes:
+            return Response(
+                {"error": "Recipe already liked."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        user.liked_recipes.append(recipe_id)
+        user.save()
+        return Response(user.liked_recipes, status=status.HTTP_201_CREATED)
+
+    # To remove a recipe id from the user's liked_recipes
+    def delete(self, request, recipe_id):
+        user = request.user
+        if recipe_id not in user.liked_recipes:
+            return Response(
+                {"error": "Recipe not found in liked recipes."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        user.liked_recipes.remove(recipe_id)
+        user.save()
         return Response(status=status.HTTP_204_NO_CONTENT)

@@ -11,6 +11,7 @@ function Form({ route, method }) {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
+    // Bring context to see if the user is authorized
     const { setIsAuthorized } = useUserContext();
 
     const name = method === "login" ? "Login" : "Register";
