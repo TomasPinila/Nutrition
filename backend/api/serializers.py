@@ -74,3 +74,13 @@ class IntoleranceSerializer(serializers.ModelSerializer):
         model = Intolerance
         fields = ["id", "name"]
         extra_kwargs = {"name": {"read_only":True}}
+
+
+class ProductSerializer(serializers.Serializer):
+
+    id = serializers.IntegerField(required=True)
+    title = serializers.CharField(required=True)
+    image = serializers.URLField()
+    category = serializers.CharField()
+    price = serializers.IntegerField()
+    nrf_score = serializers.FloatField(required=True)

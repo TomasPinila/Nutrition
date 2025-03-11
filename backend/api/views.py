@@ -2,9 +2,12 @@ from django.shortcuts import render
 from .models import User, Diet, Intolerance
 from rest_framework import generics, status # Import generic views for common CRUD operations
 from rest_framework.views import APIView
-from .serializers import UserSerializer, DietSerializer, IntoleranceSerializer
+from .serializers import UserSerializer, DietSerializer, IntoleranceSerializer, ProductSerializer
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, AllowAny
 from rest_framework.response import Response
+
+from .spoonacularapi import fetch_api_data
+from .nutrition import nutritionevaluation
 
 # Django Rest framework provides default views for creating, updating, deleting, etc, and doing the standard operations that you'd do with a rest API
 # TODO: Either start testing and configuring everything from spoonacular API or start with Frontend, or even REST tutorial 
@@ -255,3 +258,67 @@ class UserLikedRecipeDetail(APIView):
         user.liked_recipes.remove(recipe_id)
         user.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+
+"""
+    View for searching up products, calls Spoonacular API
+"""
+class ProductSearchView(APIView):
+    """
+    API endpoint that proxies product search queries to Spoonacular's API.
+    Accessible to all users (even non-registered).
+    """
+    permission_classes= [AllowAny]
+
+    def get(self, request):
+        # Extract query parameters from the request
+        search_query = request.query_params.get('query') # Retrieve query parameter
+
+        if not search_query:
+            return Response(
+                {"error": "A search query is required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        path = "/food/products/search"
+        params = {
+            'query': search_query
+        }
+        
+        response_data = fetch_api_data(path, params)
+        if "error" in response_data:
+            return Response(response_data, status=status.HTTP_502_BAD_GATEWAY)
+        
+        return Response(response_data, status=status.HTTP_200_OK)
+        
+
+class ProductInformationView(APIView):
+    """
+    API endpoint that proxies specific product search query to Spoonacular's API.
+    Accessible to all users (even non-registered).
+    """
+    permission_classes= [AllowAny]
+
+    def get(self, request, product_id):       
+        path = f"/food/products/{product_id}"
+        
+        response_data = fetch_api_data(path)
+        if "error" in response_data:
+            return Response(response_data, status=status.HTTP_502_BAD_GATEWAY)
+        
+        nutrition = response_data["nutrition"]
+        nutrients = nutrition["nutrients"]
+        nrf_score = nutritionevaluation(nutrients)
+
+        # Prepare data with the required fields
+        product_data = {
+            "id": response_data.get("id"),
+            "title": response_data.get("title"),
+            "image": response_data.get("image"),
+            "category": response_data.get("category"),
+            "price": response_data.get("price"),
+            "nrf_score": nrf_score
+        }
+
+        serializer = ProductSerializer(product_data)
+        
+        return Response(serializer.data, status=status.HTTP_200_OK)
