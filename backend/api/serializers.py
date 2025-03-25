@@ -76,11 +76,24 @@ class IntoleranceSerializer(serializers.ModelSerializer):
         extra_kwargs = {"name": {"read_only":True}}
 
 
-class ProductSerializer(serializers.Serializer):
+class HealthEvaluationSerializer(serializers.Serializer):
+    total_score = serializers.FloatField()
+    rating = serializers.CharField()
+    component_scores = serializers.DictField()
+    details = serializers.DictField()
 
-    id = serializers.IntegerField(required=True)
-    title = serializers.CharField(required=True)
-    image = serializers.URLField()
-    category = serializers.CharField()
-    price = serializers.IntegerField()
-    nrf_score = serializers.FloatField(required=True)
+class ProductSerializer(serializers.Serializer):
+    title = serializers.CharField()
+    brandOwner = serializers.CharField(allow_null=True, required=False)
+    brandName = serializers.CharField(allow_null=True, required=False)
+    ingredients = serializers.CharField(allow_null=True, required=False)
+    marketCountry = serializers.CharField(allow_null=True, required=False)
+    category = serializers.CharField(allow_null=True, required=False)
+    calories = serializers.IntegerField()
+    health_evaluation = HealthEvaluationSerializer()
+
+class ProductSearchSerializer(serializers.Serializer):
+    current_page = serializers.IntegerField()
+    total_pages = serializers.IntegerField()
+    page_size = serializers.IntegerField()
+    products = ProductSerializer(many=True)

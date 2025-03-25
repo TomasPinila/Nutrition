@@ -2,12 +2,12 @@ from django.shortcuts import render
 from .models import User, Diet, Intolerance
 from rest_framework import generics, status # Import generic views for common CRUD operations
 from rest_framework.views import APIView
-from .serializers import UserSerializer, DietSerializer, IntoleranceSerializer, ProductSerializer
+from .serializers import UserSerializer, DietSerializer, IntoleranceSerializer, ProductSearchSerializer
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, AllowAny
 from rest_framework.response import Response
 
-from .spoonacularapi import fetch_api_data
-from .nutrition import nutritionevaluation
+from .api import fetch_api_data
+from .nutrition import healthEvaluation
 
 # Django Rest framework provides default views for creating, updating, deleting, etc, and doing the standard operations that you'd do with a rest API
 # TODO: Either start testing and configuring everything from spoonacular API or start with Frontend, or even REST tutorial 
@@ -261,7 +261,7 @@ class UserLikedRecipeDetail(APIView):
     
 
 """
-    View for searching up products, calls Spoonacular API
+    View for searching up products, calls FDC API
 """
 class ProductSearchView(APIView):
     """
@@ -273,27 +273,101 @@ class ProductSearchView(APIView):
     def get(self, request):
         # Extract query parameters from the request
         search_query = request.query_params.get('query') # Retrieve query parameter
-
         if not search_query:
             return Response(
-                {"error": "A search query is required."},
+                {"error": "Search query parameter is required"},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        path = "/food/products/search"
+        
+        try:
+            page_number = int(request.query_params.get('page_number', 1))
+        except ValueError:
+            return Response(
+                {"error": "Invalid page number format"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        path = "/v1/foods/search"
+        api_name = "fdc"
+
         params = {
-            'query': search_query
+            'query': search_query,
+            'pageSize': 10, # Size of page always 10
+            'pageNumber': page_number, 
+            'dataType': 'Branded', # We're looking for branded products
         }
         
-        response_data = fetch_api_data(path, params)
+        # API Call
+        response_data = fetch_api_data(path, api_name, params)
         if "error" in response_data:
             return Response(response_data, status=status.HTTP_502_BAD_GATEWAY)
         
-        return Response(response_data, status=status.HTTP_200_OK)
-        
+        current_page = response_data.get("currentPage")
+        total_pages = response_data.get("totalPages")
+        products = response_data.get("foods")
+        processed_products = []
 
+        for product in products:
+            # add basic product info
+            # USDA calculates values per 100g or 100ml from values per serving
+            product_information = {
+                "title": product.get("description"),
+                "brandOwner": product.get("brandOwner"),
+                "brandName": product.get("brandName"),
+                "ingredients": product.get("ingredients"),
+                "marketCountry": product.get("marketCountry"),
+                "category": product.get("foodCategory"),
+            }
+
+            product_nutrients = []
+
+            # Go through every nutrient and add needed info
+            for nutrient in product.get("foodNutrients"):
+                if nutrient.get("unitName") == "KCAL":
+                    n["amount"] = nutrient.get("value")
+                    calorie_number = nutrient.get("value")
+                else:
+                    # Convert all units to grams
+                    n = {}
+                    if nutrient.get("unitName") == "G": # grams
+                        n["grams_amount"] = nutrient.get("value")
+                    elif nutrient.get("unitName") == "MG": # miligrams
+                        n["grams_amount"] = nutrient.get("value")/1000
+                    elif nutrient.get("unitName") == "UG": # micrograms
+                        n["microgram_amount"] = nutrient.get("value") #we'll leave it as ug because the number is too small to pass to grams
+                    else:
+                        n["grams_amount"] = 'NA'
+                    
+                    if nutrient.get("percentDailyValue"):
+                        n["percentDailyValue"] = nutrient.get("percentDailyValue")
+                    
+                    # add to product_nutrients dictionary
+                    product_nutrients.append(nutrient)
+            
+            # add calories to product_information
+            product_information["calories"] = calorie_number
+
+            health_evaluation = healthEvaluation(calorie_number, product_nutrients, product_information["ingredients"])
+
+            product_information["health_evaluation"] = health_evaluation
+
+            processed_products.append(product_information)
+
+        processed_data = {
+            "current_page": current_page,
+            "total_pages": total_pages,
+            "page_size": 10,
+            "products": processed_products
+        }    
+
+        serializer = ProductSearchSerializer(processed_data)
+        
+        return Response(serializer.data, status=status.HTTP_200_OK)
+        
+'''
 class ProductInformationView(APIView):
     """
-    API endpoint that proxies specific product search query to Spoonacular's API.
+    API endpoint that proxies specific product search query to FDC's API.
     Accessible to all users (even non-registered).
     """
     permission_classes= [AllowAny]
@@ -321,4 +395,5 @@ class ProductInformationView(APIView):
 
         serializer = ProductSerializer(product_data)
         
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)'
+'''
