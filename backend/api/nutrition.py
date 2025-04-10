@@ -245,7 +245,7 @@ def analyzeNutrients(nutrients):
                         score += 1
                     else:
                         evaluation = "great"
-                        score += 2
+                        score += 2.5 # Give a bit more weight into good nutrients with good amount
                     nutr = {
                         "percentDailyValue": nutrient["percentDailyValue"],
                         "evaluation": evaluation
@@ -258,9 +258,12 @@ def analyzeNutrients(nutrients):
                     elif nutrient["percentDailyValue"] < 20:
                         evaluation = "normal"
                         score -= 1
-                    else:
+                    elif nutrient["percentDailyValue"] < 40:
                         evaluation = "bad"
                         score -= 2
+                    else:
+                        evaluation = "very bad"
+                        score -= 2.5 # Give a bit more weight into bad nutrients with really bad amount
                     nutr = {
                         "percentDailyValue": nutrient["percentDailyValue"],
                         "evaluation": evaluation
@@ -302,7 +305,7 @@ def analyzeNutrients(nutrients):
 def healthEvaluation(calories, nutrients, ingredients):
     # Get individual analyses
     ingredients_analysis = analyzeIngredients(ingredients)
-    calories_analysis = analyzeCalories(calories)
+    calories_analysis_score = analyzeCalories(calories)
     nutrients_analysis = analyzeNutrients(nutrients)
     print(ingredients_analysis)
     
@@ -317,8 +320,13 @@ def healthEvaluation(calories, nutrients, ingredients):
     nutrient_score = nutrients_analysis.get("score", 0) * nutrient_weight
     
     # Calorie Score (0-4 scale converted to 0-2)
-    calorie_score_map = {"low": 4, "moderate": 3, "moderately high": 2, "high": 1}
-    calorie_value = calories_analysis / 2  # Convert 4-point scale to 0-2
+    calorie_score_map = { 4: "low", 3: "moderate", 2: "moderately high", 1: "high"}
+
+    # Get calorie score analyis 
+    calories_analysis = calorie_score_map[calories_analysis_score]
+
+
+    calorie_value = calories_analysis_score / 2  # Convert 4-point scale to 0-2
     calorie_score = calorie_value * calorie_weight
     
     # Ingredient Scores (0-4 points)
@@ -351,7 +359,7 @@ def healthEvaluation(calories, nutrients, ingredients):
         rating = "Healthy"
     elif total_score >= 3.0:
         rating = "Moderate"
-    elif total_score >= 1.5:
+    elif total_score >= 1:
         rating = "Unhealthy"
     else:
         rating = "Very Unhealthy"
@@ -368,7 +376,6 @@ def healthEvaluation(calories, nutrients, ingredients):
         },
         "details": {
             "ingredients": ingredients_analysis,
-            "nutrients": nutrients_analysis,
-            "calories": calorie_score_map
+            "nutrients": nutrients_analysis
         }
     }

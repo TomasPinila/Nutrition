@@ -265,7 +265,7 @@ class UserLikedRecipeDetail(APIView):
 """
 class ProductSearchView(APIView):
     """
-    API endpoint that proxies product search queries to Spoonacular's API.
+    API endpoint that proxies product search queries to the FDC API, also calls function to calculate health score and returns it.
     Accessible to all users (even non-registered).
     """
     permission_classes= [AllowAny]
@@ -324,25 +324,28 @@ class ProductSearchView(APIView):
             # Go through every nutrient and add needed info
             for nutrient in product.get("foodNutrients"):
                 if nutrient.get("unitName") == "KCAL":
-                    n["amount"] = nutrient.get("value")
                     calorie_number = nutrient.get("value")
                 else:
+                    # Add basic nutrient info
+                    n = {
+                        "nutrientId": nutrient.get("nutrientId"),
+                        "nutrientName": nutrient.get("nutrientName")
+                    }
                     # Convert all units to grams
-                    n = {}
                     if nutrient.get("unitName") == "G": # grams
                         n["grams_amount"] = nutrient.get("value")
                     elif nutrient.get("unitName") == "MG": # miligrams
                         n["grams_amount"] = nutrient.get("value")/1000
                     elif nutrient.get("unitName") == "UG": # micrograms
-                        n["microgram_amount"] = nutrient.get("value") #we'll leave it as ug because the number is too small to pass to grams
+                        n["grams_amount"] = nutrient.get("value")/1000000
                     else:
                         n["grams_amount"] = 'NA'
                     
                     if nutrient.get("percentDailyValue"):
                         n["percentDailyValue"] = nutrient.get("percentDailyValue")
-                    
+                      
                     # add to product_nutrients dictionary
-                    product_nutrients.append(nutrient)
+                    product_nutrients.append(n)
             
             # add calories to product_information
             product_information["calories"] = calorie_number

@@ -18,6 +18,6 @@ urlpatterns = [ # URL patterns define the structure of the URL path. Query param
     path("saved_recipe/<int:recipe_id>/", views.UserSavedRecipeDetail.as_view(), name="saved_recipe"),
     path("liked_recipe/<int:recipe_id>/", views.UserLikedRecipeDetail.as_view(), name="liked_recipe"),
     
-    #Calling Spoonacular API
+    #Calling FDC API
     path("product_search/", views.ProductSearchView.as_view(), name="product_search"), # URL patterns only match the path portion of the URL—not the query parameters. Query parameters (everything after the “?”) are handled within your view via request.query_params
 ]
