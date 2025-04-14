@@ -2,7 +2,9 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useUserContext } from "../contexts/UserContext";
 
-function Navbar() {
+//TODO: Add search component in navbar like google/amazon, google icon on left, search bar centered, and links to the right
+
+function Navbar({ search }) {
     const { isAuthorized } = useUserContext(); // Grab UserContext values by using useUserContext hook
     // Optional: Handle loading state
     if (isAuthorized === null) {

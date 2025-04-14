@@ -303,14 +303,26 @@ class ProductSearchView(APIView):
             return Response(response_data, status=status.HTTP_502_BAD_GATEWAY)
         
         current_page = response_data.get("currentPage")
+        if current_page > 1:
+            current_set_page = int((int(current_page) - 1)/5)
+        elif current_page == 1:
+            current_set_page = 0
+        else:
+            return Response(
+                {"error": "Invalid page number format"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
         total_pages = response_data.get("totalPages")
         products = response_data.get("foods")
         processed_products = []
+        product_id = 0
 
         for product in products:
             # add basic product info
             # USDA calculates values per 100g or 100ml from values per serving
             product_information = {
+                "id": product_id,
                 "title": product.get("description"),
                 "brandOwner": product.get("brandOwner"),
                 "brandName": product.get("brandName"),
@@ -318,6 +330,7 @@ class ProductSearchView(APIView):
                 "marketCountry": product.get("marketCountry"),
                 "category": product.get("foodCategory"),
             }
+            product_id += 1
 
             product_nutrients = []
 
@@ -358,6 +371,7 @@ class ProductSearchView(APIView):
 
         processed_data = {
             "current_page": current_page,
+            "current_set_page": current_set_page,
             "total_pages": total_pages,
             "page_size": 10,
             "products": processed_products

@@ -83,6 +83,7 @@ class HealthEvaluationSerializer(serializers.Serializer):
     details = serializers.DictField()
 
 class ProductSerializer(serializers.Serializer):
+    id = serializers.IntegerField(required=True)
     title = serializers.CharField()
     brandOwner = serializers.CharField(allow_null=True, required=False)
     brandName = serializers.CharField(allow_null=True, required=False)
@@ -94,6 +95,7 @@ class ProductSerializer(serializers.Serializer):
 
 class ProductSearchSerializer(serializers.Serializer):
     current_page = serializers.IntegerField()
+    current_set_page = serializers.IntegerField()
     total_pages = serializers.IntegerField()
     page_size = serializers.IntegerField()
     products = ProductSerializer(many=True)

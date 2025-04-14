@@ -1,8 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-function IsHealthy({ is_healthy, url }) {
-    // Mapping object for is_healthy values to class names
+function IsHealthy({ health_evaluation, url }) {
+    /* Mapping object for is_healthy values to class names
     const healthClassMap = {
         Very: "very-healthy",
         Yes: "healthy",
@@ -11,20 +11,20 @@ function IsHealthy({ is_healthy, url }) {
     };
 
     // Get the class name based on the is_healthy value
-    const healthClass = healthClassMap[is_healthy] || "default-healthy";
+    const healthClass = healthClassMap[is_healthy] || "default-healthy"; */
 
     // Use the is_healthy prop as the text to display
-    const displayText = is_healthy || "Not Disclosed";
+    const displayText = health_evaluation.rating || "Not Disclosed";
 
     return (
         <div className="is-healthy">
-            <a className={healthClass}>
+            <span className="healthClass">
                 <h4 className="health-name">{displayText}</h4>
                 {/*TODO: link to specific page*/}
                 <Link to={`${url}`} className="product-link">
                     Wanna know why?
                 </Link>
-            </a>
+            </span>
         </div>
     );
 }

@@ -1,8 +1,9 @@
 import react from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Home from "./pages/Home";
+import SearchResults from "./pages/SearchResults";
 import NotFound from "./pages/NotFound";
 import Product from "./pages/Product";
 import Liked_Recipes from "./pages/registered_users/Liked_Recipes";
@@ -38,6 +39,8 @@ function App() {
             <main className="main-content">
                 <Routes>
                     <Route path="/" element={<Home />} />
+                    {/* TODO: change to include query params on route */}
+                    <Route path="/search" element={<SearchResults />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/logout" element={<Logout />} />
                     <Route path="/register" element={<RegisterAndLogout />} />
