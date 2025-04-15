@@ -1,7 +1,6 @@
 import React from "react";
-import { Link } from "react-router-dom";
 
-function IsHealthy({ health_evaluation, url }) {
+function IsHealthy({ health_evaluation }) {
     /* Mapping object for is_healthy values to class names
     const healthClassMap = {
         Very: "very-healthy",
@@ -20,10 +19,7 @@ function IsHealthy({ health_evaluation, url }) {
         <div className="is-healthy">
             <span className="healthClass">
                 <h4 className="health-name">{displayText}</h4>
-                {/*TODO: link to specific page*/}
-                <Link to={`${url}`} className="product-link">
-                    Wanna know why?
-                </Link>
+                <a>Click to know why</a>
             </span>
         </div>
     );
