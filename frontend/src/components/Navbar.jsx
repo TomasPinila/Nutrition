@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useUserContext } from "../contexts/UserContext";
+import "../css/Navbar.css";
 
 //TODO: Add search component in navbar like google/amazon, google icon on left, search bar centered, and links to the right
 

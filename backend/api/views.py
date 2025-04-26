@@ -428,8 +428,8 @@ class FetchProductImageView(APIView):
     def get(self,  request):
         product_name = request.query_params.get('query')
 
-        api_key = 'AIzaSyC4j0Q0_IVZTOkWOplZ9-YdeyRc1QZl8NE'
-        search_engine_id = '505b4b05787624402'
+        api_key = ''
+        search_engine_id = ''
         query = product_name
 
         url = f'https://www.googleapis.com/customsearch/v1?q={query}&cx={search_engine_id}&key={api_key}&searchType=image&num=1'
