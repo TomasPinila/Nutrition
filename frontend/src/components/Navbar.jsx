@@ -12,45 +12,61 @@ function Navbar({ search }) {
     }
 
     return (
-        <nav className="navbar">
-            <div className="navbar-brand">
-                {/* Left Side of Navbar */}
-                {/* Acts like normal hyperlink except for something on own webpage */}
-                <Link to="/">Food Check</Link>
-            </div>
-            <div className="navbar-links">
-                <Link to="/" className="nav-link">
-                    Home
-                </Link>
-                {/* Conditional Rendering */}
-                {isAuthorized === null || isAuthorized === false ? (
-                    <>
-                        {/* React requires that a component or expression only return a single parent element. */}
-                        <Link to="/login" className="nav-link">
-                            Login
+        <header className="header">
+            <nav className="header-nav">
+                <div className="header-logo">
+                    {/* Left Side of Navbar */}
+                    {/* Acts like normal hyperlink except for something on own webpage */}
+                    <Link to="/">Health Checker</Link>
+                </div>
+                <ul className="header-links">
+                    <li>
+                        <Link to="/" className="nav-link">
+                            Home
                         </Link>
-                        <Link to="/register" className="nav-link">
-                            Register
-                        </Link>
-                    </>
-                ) : (
-                    <>
-                        <Link to="/profile" className="nav-link">
-                            Profile
-                        </Link>
-                        <Link to="/recipe-search" className="nav-link">
-                            Search Recipes
-                        </Link>
-                        <Link to="/menu-search" className="nav-link">
-                            Search Menus
-                        </Link>
-                        <Link to="/logout" className="nav-link">
-                            Log out
-                        </Link>
-                    </>
-                )}
-            </div>
-        </nav>
+                    </li>
+                    {/* Conditional Rendering */}
+                    {isAuthorized === null || isAuthorized === false ? (
+                        <>
+                            {/* React requires that a component or expression only return a single parent element. */}
+                            <li>
+                                <Link to="/login" className="nav-link">
+                                    Login
+                                </Link>
+                            </li>
+                            <li>
+                                <Link to="/register" className="nav-link">
+                                    Register
+                                </Link>
+                            </li>
+                        </>
+                    ) : (
+                        <>
+                            <li>
+                                <Link to="/profile" className="nav-link">
+                                    Profile
+                                </Link>
+                            </li>
+                            <li>
+                                <Link to="/recipe-search" className="nav-link">
+                                    Search Recipes
+                                </Link>
+                            </li>
+                            <li>
+                                <Link to="/menu-search" className="nav-link">
+                                    Search Menus
+                                </Link>
+                            </li>
+                            <li>
+                                <Link to="/logout" className="nav-link">
+                                    Log out
+                                </Link>
+                            </li>
+                        </>
+                    )}
+                </ul>
+            </nav>
+        </header>
     );
 }
 

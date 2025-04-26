@@ -20,4 +20,7 @@ urlpatterns = [ # URL patterns define the structure of the URL path. Query param
     
     #Calling FDC API
     path("product_search/", views.ProductSearchView.as_view(), name="product_search"), # URL patterns only match the path portion of the URL—not the query parameters. Query parameters (everything after the “?”) are handled within your view via request.query_params
+
+    # Calling Google Image API
+    # path("product_fetch_image/", views.FetchProductImageView.as_view(), name="product_image")
 ]

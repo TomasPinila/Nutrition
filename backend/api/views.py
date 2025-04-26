@@ -8,6 +8,7 @@ from rest_framework.response import Response
 
 from .api import fetch_api_data
 from .nutrition import healthEvaluation
+from .utils import fetch_product_image
 
 # Django Rest framework provides default views for creating, updating, deleting, etc, and doing the standard operations that you'd do with a rest API
 # TODO: Either start testing and configuring everything from spoonacular API or start with Frontend, or even REST tutorial 
@@ -319,6 +320,10 @@ class ProductSearchView(APIView):
         product_id = 0
 
         for product in products:
+            # get product image
+            product_image_query = f"{product.get('brandName')} {product.get('description')}"
+            product_image = fetch_product_image(product_image_query)
+            
             # add basic product info
             # USDA calculates values per 100g or 100ml from values per serving
             product_information = {
@@ -329,6 +334,7 @@ class ProductSearchView(APIView):
                 "ingredients": product.get("ingredients"),
                 "marketCountry": product.get("marketCountry"),
                 "category": product.get("foodCategory"),
+                "product_image": product_image,
             }
             product_id += 1
 
@@ -413,4 +419,34 @@ class ProductInformationView(APIView):
         serializer = ProductSerializer(product_data)
         
         return Response(serializer.data, status=status.HTTP_200_OK)'
+'''
+
+'''
+class FetchProductImageView(APIView):
+    permission_classes= [AllowAny]
+
+    def get(self,  request):
+        product_name = request.query_params.get('query')
+
+        api_key = 'AIzaSyC4j0Q0_IVZTOkWOplZ9-YdeyRc1QZl8NE'
+        search_engine_id = '505b4b05787624402'
+        query = product_name
+
+        url = f'https://www.googleapis.com/customsearch/v1?q={query}&cx={search_engine_id}&key={api_key}&searchType=image&num=1'
+
+        # API Call
+        response_data = fetch_api_data(url, 'google_img')
+        if "error" in response_data:
+            return Response(response_data, status=status.HTTP_502_BAD_GATEWAY)
+        
+        items = response_data.get("items")
+        item = items[0]
+        product_image = {
+            "image_link": item.get("link"),
+            "source_link": item.get("displayLink")
+        }
+
+        serializer = ProductImageSerializer(product_image)
+        
+        return Response(serializer.data, status=status.HTTP_200_OK)
 '''

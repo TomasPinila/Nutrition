@@ -16,6 +16,8 @@ import { UserProvider, useUserContext } from "./contexts/UserContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Navbar from "./components/Navbar";
 
+// TODO: make footer component
+
 function Logout() {
     const { setIsAuthorized } = useUserContext();
 

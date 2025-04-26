@@ -130,7 +130,7 @@ def analyzeIngredients(ingredients):
     # Clean and split ingredients
     cleaned = split_ingredients(ingredients)
     first_three = cleaned[:3]
-    print(cleaned)
+    # print(cleaned)
 
     evaluation = {
         "total_ingredients": len(cleaned),  # Total ingredient count
@@ -307,7 +307,7 @@ def healthEvaluation(calories, nutrients, ingredients):
     ingredients_analysis = analyzeIngredients(ingredients)
     calories_analysis_score = analyzeCalories(calories)
     nutrients_analysis = analyzeNutrients(nutrients)
-    print(ingredients_analysis)
+    # print(ingredients_analysis)
     
     # Calculate component scores with weights
     nutrient_weight = 0.4  # 40%
