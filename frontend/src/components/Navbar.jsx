@@ -15,14 +15,15 @@ function Navbar({ search }) {
     return (
         <header className="header">
             <nav className="header-nav">
-                <div className="header-logo">
-                    {/* Left Side of Navbar */}
-                    {/* Acts like normal hyperlink except for something on own webpage */}
-                    <Link to="/">Health Checker</Link>
-                </div>
+                {/* Left Side of Navbar */}
+                {/* Acts like normal hyperlink except for something on own webpage */}
+                <Link to="/" className="header-logo">
+                    Health Checker
+                </Link>
+
                 <ul className="header-links">
                     <li>
-                        <Link to="/" className="nav-link">
+                        <Link to="/" className="header-link">
                             Home
                         </Link>
                     </li>
@@ -31,12 +32,12 @@ function Navbar({ search }) {
                         <>
                             {/* React requires that a component or expression only return a single parent element. */}
                             <li>
-                                <Link to="/login" className="nav-link">
+                                <Link to="/login" className="header-link">
                                     Login
                                 </Link>
                             </li>
                             <li>
-                                <Link to="/register" className="nav-link">
+                                <Link to="/register" className="header-link">
                                     Register
                                 </Link>
                             </li>
@@ -44,22 +45,25 @@ function Navbar({ search }) {
                     ) : (
                         <>
                             <li>
-                                <Link to="/profile" className="nav-link">
+                                <Link to="/profile" className="header-link">
                                     Profile
                                 </Link>
                             </li>
                             <li>
-                                <Link to="/recipe-search" className="nav-link">
+                                <Link
+                                    to="/recipe-search"
+                                    className="header-link"
+                                >
                                     Search Recipes
                                 </Link>
                             </li>
                             <li>
-                                <Link to="/menu-search" className="nav-link">
+                                <Link to="/menu-search" className="header-link">
                                     Search Menus
                                 </Link>
                             </li>
                             <li>
-                                <Link to="/logout" className="nav-link">
+                                <Link to="/logout" className="header-link">
                                     Log out
                                 </Link>
                             </li>
