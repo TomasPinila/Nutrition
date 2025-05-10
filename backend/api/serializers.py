@@ -82,9 +82,9 @@ class HealthEvaluationSerializer(serializers.Serializer):
     component_scores = serializers.DictField()
     details = serializers.DictField()
 
-class ProductImageSerializer(serializers.Serializer):
-    image_link = serializers.URLField()
-    source_link = serializers.URLField()
+# class ProductImageSerializer(serializers.Serializer):
+#     image_link = serializers.URLField()
+#     source_link = serializers.URLField()
 
 class ProductSerializer(serializers.Serializer):
     id = serializers.IntegerField(required=True)
@@ -94,7 +94,8 @@ class ProductSerializer(serializers.Serializer):
     ingredients = serializers.CharField(allow_null=True, required=False)
     marketCountry = serializers.CharField(allow_null=True, required=False)
     category = serializers.CharField(allow_null=True, required=False)
-    product_image = ProductImageSerializer()
+    # with google, we changed to frontend: product_image = ProductImageSerializer()
+    # with duckduckgo(DOESNT WORK) = product_image = serializers.URLField()
     calories = serializers.IntegerField()
     health_evaluation = HealthEvaluationSerializer()
 

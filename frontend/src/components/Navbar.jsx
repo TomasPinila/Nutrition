@@ -18,7 +18,7 @@ function Navbar({ search }) {
                 {/* Left Side of Navbar */}
                 {/* Acts like normal hyperlink except for something on own webpage */}
                 <Link to="/" className="header-logo">
-                    Health Checker
+                    EatWise
                 </Link>
 
                 <ul className="header-links">

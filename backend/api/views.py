@@ -8,7 +8,7 @@ from rest_framework.response import Response
 
 from .api import fetch_api_data
 from .nutrition import healthEvaluation
-from .utils import fetch_product_image
+# from .utils import fetch_product_image
 
 # Django Rest framework provides default views for creating, updating, deleting, etc, and doing the standard operations that you'd do with a rest API
 # TODO: Either start testing and configuring everything from spoonacular API or start with Frontend, or even REST tutorial 
@@ -321,8 +321,8 @@ class ProductSearchView(APIView):
 
         for product in products:
             # get product image
-            product_image_query = f"{product.get('brandName')} {product.get('description')}"
-            product_image = fetch_product_image(product_image_query)
+            # product_image_query = f"{product.get('brandName')} {product.get('description')}"
+            # product_image = fetch_product_image(product_image_query)
             
             # add basic product info
             # USDA calculates values per 100g or 100ml from values per serving
@@ -334,7 +334,8 @@ class ProductSearchView(APIView):
                 "ingredients": product.get("ingredients"),
                 "marketCountry": product.get("marketCountry"),
                 "category": product.get("foodCategory"),
-                "product_image": product_image,
+                # Using google: "product_image": product_image or {"image_link": None, "source_link": None}
+                # "product_image": product_image or None,
             }
             product_id += 1
 

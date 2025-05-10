@@ -44,20 +44,25 @@ ENCOURAGE_NUTRIENTS = {
     1087: "Calcium",
     1089: "Iron",
     1092: "Potassium",
-    1110: "Vitamin D"
+    1110: "Vitamin D",
+    2067: "Vitamin A"
 }
 
 LIMIT_NUTRIENTS = {
     1258: "Saturated Fat",
+    1257: "Fatty acids, total trans",
     1093: "Sodium",
-    2000: "Added Sugars"
+    2000: "Added Sugars",
+    1253: "Cholesterol"
 }
 
 # Daily Value Conversion (if nutrient has no DV we calculate it), values represent the 100% of DV of each nutrient, did this according to FDA image
 DAILY_VALUES_G = {
     1079: 28,       # Fiber - g
     1093: 2.3,      # Sodium - g (Converted from 2300mg to 2.3g)
+    1253: 0.3,      # Cholesterol - g (Converted from 200mg to 0.3g)
     1258: 20,       # Saturated Fat - g
+    1257: 2,        # Trans fat - g (From DSHS)
     2000: 50,       # Added Sugars - g
     1110: 0.00002,  # Vitamin D - g (Converted from 20mcg to 0.00002g)
     1087: 1.3,      # Calcium - g (Converted from 1300mg to 1.3g)
@@ -185,7 +190,7 @@ def analyzeIngredients(ingredients):
         "First ingredients contain problematic components. Try choosing products with "
         f"whole foods listed as the first three ingredients"
         if unhealthy_flags else
-        f"Great! Healthy ingredients. {evaluation['whole_foods_count']}/3 first ingredients are whole foods."
+        f"Good, no problematic ingredients found. It's good to choose products that have whole foods listed as the first three ingredients. {evaluation['whole_foods_count']} out of the first 3 ingredients in this product are whole foods."
     )
     evaluation["ingredient_number_score"] = get_ingredient_length_score(evaluation["total_ingredients"])
     evaluation["ingredient_number_recommendation"] = get_ingredient_length_advice(evaluation["total_ingredients"])
@@ -218,8 +223,8 @@ def analyzeNutrients(nutrients):
     '''
     # Dictionaries that assign nutrients to their corresponding Percentage of Daily Value, initialized in 0
     evaluated_nutrients = {}
-    nutrients_to_encourage = {}
-    nutrients_to_limit = {}
+    nutrients_to_encourage = []
+    nutrients_to_limit = []
     score = 0
 
     # Assign Percentage of DV to each nutrient accordingly
@@ -238,8 +243,11 @@ def analyzeNutrients(nutrients):
             # Start calculating score if evaluate is true
             if evaluate == True:
                 if nutrient_id in ENCOURAGE_NUTRIENTS :
+                    if nutrient["percentDailyValue"] == 0:
+                        evaluation = "low"
                     if nutrient["percentDailyValue"] <= 5:
                         evaluation = "low"
+                        score += 0.5
                     elif nutrient["percentDailyValue"] < 20:
                         evaluation = "normal"
                         score += 1
@@ -247,10 +255,11 @@ def analyzeNutrients(nutrients):
                         evaluation = "great"
                         score += 2.5 # Give a bit more weight into good nutrients with good amount
                     nutr = {
+                        "name": nutrient["nutrientName"],
                         "percentDailyValue": nutrient["percentDailyValue"],
                         "evaluation": evaluation
                     }
-                    nutrients_to_encourage[nutrient["nutrientName"]] = nutr
+                    nutrients_to_encourage.append(nutr) 
 
                 elif nutrient_id in LIMIT_NUTRIENTS:
                     if nutrient["percentDailyValue"] <= 5:
@@ -265,10 +274,11 @@ def analyzeNutrients(nutrients):
                         evaluation = "very bad"
                         score -= 2.5 # Give a bit more weight into bad nutrients with really bad amount
                     nutr = {
+                        "name": nutrient["nutrientName"],
                         "percentDailyValue": nutrient["percentDailyValue"],
                         "evaluation": evaluation
                     }
-                    nutrients_to_limit[nutrient["nutrientName"]] = nutr
+                    nutrients_to_limit.append(nutr)
 
 
 
@@ -281,7 +291,7 @@ def analyzeNutrients(nutrients):
     elif score >= 4:
         result = "Good"
     elif score >= 0:
-        result = "Fair"
+        result = "Medium"
     else:
         result = "Poor"
 
