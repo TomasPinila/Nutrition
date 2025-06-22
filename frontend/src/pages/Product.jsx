@@ -1,12 +1,88 @@
 // Page for showing specific product
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom"; // Hook to get product data sent as state in "Navigate"
-import sample from "../assets/sample.jpg";
+import sample from "../assets/product_placeholder.png";
 import NutrientTable from "../components/NutritionTable";
+import "../css/Product.css";
+import api from "../api";
 
 function Product() {
     const location = useLocation(); // Returns the current navigation action which describes how the router came to
     const { product } = location.state || {}; // Get product info
+
+    const [imageLink, setImageLink] = useState(null);
+    const google_key = import.meta.env.VITE_GOOGLE_API_KEY;
+    const search_engine_id = import.meta.env.VITE_GOOGLE_SEARCH_ENGINE_ID;
+
+    // Get product image
+
+    useEffect(() => {
+        const loadImage = async (url) => {
+            try {
+                const product_name = product.title.toLowerCase();
+                // Build array of search terms
+
+                const terms = [
+                    product.brandName || product.brandOwner,
+                    product_name,
+                    product.category,
+                    "official",
+                    "product image",
+                ];
+
+                // Join + encode
+                const q = terms.join(" ");
+
+                // 4) Build the URL with URLSearchParams
+                const params = new URLSearchParams({
+                    q,
+                    cx: import.meta.env.VITE_GOOGLE_SEARCH_ENGINE_ID,
+                    key: import.meta.env.VITE_GOOGLE_API_KEY,
+                    searchType: "image",
+                    num: "1",
+                    imgType: "photo", // bias toward real-world photos
+                    fileType: "jpg", // optional: only JPG
+                    // siteSearch: "example.com", // optional: lock to a domain
+                });
+
+                const url = `https://www.googleapis.com/customsearch/v1?${params}`;
+                console.log("Google Image Query:", url);
+                const response = await api.get(url, { baseURL: "" });
+                // baseURL: "" prevents Axios from prepending your API baseURL
+
+                if (response.data.items && response.data.items.length > 0) {
+                    setImageLink(response.data.items[0].link); // first image link
+                }
+            } catch (error) {
+                console.error("Error fetching image:", error);
+            }
+        };
+        if (product) loadImage();
+    }, [product]);
+
+    //Health evaluation color
+    const score = product.health_evaluation.rating;
+    let healthClassName;
+    switch (true) {
+        case score === "Excellent":
+            healthClassName = "excellent-score";
+            break;
+        case score === "Very Healthy":
+            healthClassName = "very-healthy-score";
+            break;
+        case score === "Healthy":
+            healthClassName = "healthy-score";
+            break;
+        case score === "Moderate":
+            healthClassName = "moderate-score";
+            break;
+        case score === "Unhealthy":
+            healthClassName = "unhealthy-score";
+            break;
+        case score === "Very Unhealthy":
+            healthClassName = "very-unhealthy-score";
+            break;
+    }
 
     if (!product) {
         // case where product data is not available
@@ -22,21 +98,37 @@ function Product() {
                     <h4>{product.brandName}</h4>
                     <p>{product.marketCountry}</p>
                     <p>{product.category}</p>
-                    <h3> General Product Health Score</h3>
-                    <h4>{product.health_evaluation.rating}</h4>
+                    <table className="score-table">
+                        <thead>
+                            <tr>
+                                <th>General Health Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td className={healthClassName}>
+                                    <h4>{product.health_evaluation.rating}</h4>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
                 <div className="product-image">
-                    <img src={sample} alt="product image" />
+                    {imageLink ? (
+                        <img src={imageLink} alt={product.title} />
+                    ) : (
+                        <img src={sample} alt="sample product image" />
+                    )}
                 </div>
             </section>
-            <section>
+            <section className="health-info">
                 <div className="health">
                     <h3>Evaluation Analysis</h3>
                     <p>
                         All nutritional values are calculated per serving, USDA
                         calculates serving values per 100g. Values calculated
                         from %DV use current daily values for an adult 2,000
-                        calorie diet
+                        calorie diet.
                     </p>
                 </div>
 
@@ -57,8 +149,15 @@ function Product() {
                             <p>
                                 {/* &#40; is the HTML entity for (. &#41; is the HTML entity for ) */}
                                 The Washington State Department of Social and
-                                Health Services &#40;<a href="#">DSHS</a>&#41;
-                                states that generally, for the amount of
+                                Health Services &#40;
+                                <a
+                                    className="anchor"
+                                    target="_blank"
+                                    href="https://www.dshs.wa.gov/sites/default/files/ALTSA/stakeholders/documents/duals/toolkit/Reading%20Food%20Nutrition%20Labels.pdf"
+                                >
+                                    DSHS
+                                </a>
+                                &#41; states that generally, for the amount of
                                 calories in a food per 100g of serving:
                             </p>
                             <ul className="health-ul">
@@ -105,7 +204,11 @@ function Product() {
                                 If you want to check the list of refined grains,
                                 sugar types, and hydrogenated oils to look out
                                 for, and also the ones we use to evaluate the
-                                health score, <a href="#">click here</a>.
+                                health score,{" "}
+                                <a className="anchor" href="#">
+                                    click here
+                                </a>
+                                .
                             </p>
                             {/* TODO: Create Page specifying evaluation */}
                             <p>
@@ -123,13 +226,13 @@ function Product() {
                                 <li>
                                     <span className="bold-text">
                                         6-10 ingredients:
-                                    </span>
+                                    </span>{" "}
                                     Moderately processed
                                 </li>
                                 <li>
                                     <span className="bold-text">
                                         10+ ingredients:
-                                    </span>
+                                    </span>{" "}
                                     Likely ultra-processed
                                 </li>
                             </ul>
@@ -178,7 +281,10 @@ function Product() {
                                 accordance with the FDA's recommendation. If you
                                 want to check out the list of nutrients we take
                                 into account, along with their percentage of DV,{" "}
-                                <a href="#">click here</a>
+                                <a className="anchor" href="#">
+                                    click here
+                                </a>
+                                .
                             </p>
                             <p>But in a nutshell:</p>
                             <ul className="health-ul">
@@ -198,7 +304,7 @@ function Product() {
                                 <li>
                                     <span className="bold-text">
                                         Nutrients to get more of:
-                                    </span>
+                                    </span>{" "}
                                     Dietary Fiber, Vitamin D, Calcium, Iron, and
                                     Potassium. Eating a diet high in dietary
                                     fiber can increase the frequency of bowel
@@ -211,8 +317,9 @@ function Product() {
                                 </li>
                                 <li>
                                     <span className="bold-text">
-                                        10+ ingredients: Likely ultra-processed
-                                    </span>
+                                        10+ ingredients:
+                                    </span>{" "}
+                                    Likely ultra-processed
                                 </li>
                             </ul>
                             <p>A general guide to %DV:</p>

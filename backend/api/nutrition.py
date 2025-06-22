@@ -236,7 +236,7 @@ def analyzeNutrients(nutrients):
             # Calculate DV of Important nutrients (to encourage and not encourage) if nutrient doesn't have one, sometimes nutrients don't have them
             if "percentDailyValue" not in nutrient: #sometimes nutrients don't have them
                 if nutrient_id in DAILY_VALUES_G:
-                    nutrient["percentDailyValue"] = (nutrient["grams_amount"]/DAILY_VALUES_G[nutrient_id])*100
+                    nutrient["percentDailyValue"] = round((nutrient["grams_amount"]/DAILY_VALUES_G[nutrient_id])*100, 2)
                 else:
                     evaluate = False
 

@@ -362,7 +362,7 @@ class ProductSearchView(APIView):
                         n["grams_amount"] = 'NA'
                     
                     if nutrient.get("percentDailyValue"):
-                        n["percentDailyValue"] = nutrient.get("percentDailyValue")
+                        n["percentDailyValue"] = round(nutrient.get("percentDailyValue"), 2)
                       
                     # add to product_nutrients dictionary
                     product_nutrients.append(n)

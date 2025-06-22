@@ -1,0 +1,135 @@
+.hero-section {
+    height: 50vh;
+    padding: 4rem;
+    text-align: center;
+    align-content: center;
+}
+
+.hero-title {
+    margin-bottom: 3rem;
+    font-style: italic;
+    font-weight: 600;
+    font-size: 40px;
+    color: #22d44e;
+}
+
+.features {
+    background-color: #53f767;
+    color: white;
+    text-align: center;
+}
+
+.features-title-1 {
+    font-size: 33px;
+    font-weight: 600;
+    font-style: italic;
+    margin-bottom: 0.5rem;
+}
+
+.features-title-2 {
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: white;
+}
+
+.features-title-3 {
+    font-size: 28px;
+    font-weight: 600;
+    font-style: italic;
+    margin-bottom: 0.5rem;
+}
+
+.information {
+    background-color: white;
+    color: #22d44e;
+    text-align: center;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 2rem;
+    max-width: none;
+    margin: 0 auto;
+    grid-template-areas:
+        "a b c"
+        "a d e";
+}
+
+.info-grid img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.a {
+    grid-area: a;
+    max-height: 900px;
+}
+.b {
+    grid-area: b;
+    text-align: center;
+    align-content: center;
+}
+.c {
+    grid-area: c;
+}
+.d {
+    grid-area: d;
+}
+.e {
+    grid-area: e;
+    text-align: center;
+}
+
+.c,
+.d {
+    max-height: 300px;
+    overflow: hidden;
+    margin: auto 0;
+}
+
+.info-list {
+    /* Remove bullet points */
+    list-style-type: none;
+    padding-left: 0;
+}
+.info-list-item {
+    /* add lines inbetween items */
+    padding: 8px 0;
+    border-bottom: 1px solid #e0e0e0;
+    color: #5d5d5d;
+}
+.info-list-item::before {
+    content: "→";
+    margin-right: 10px;
+    color: #22d44e;
+}
+
+.info-button {
+    padding: 10px 20px;
+    margin-top: 1.5rem;
+    background-color: #53f767;
+    color: white;
+    border-radius: 6px;
+}
+.info-button:hover {
+    background-color: #22d44e;
+    color: white;
+}
+
+.info-p {
+    margin-bottom: 1rem;
+}
+
+.info-list {
+    text-align: left;
+}
+
+.info-h4 {
+    color: #22d44e;
+    font-size: 23px;
+    font-style: italic;
+}
