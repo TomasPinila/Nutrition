@@ -2,6 +2,7 @@ import react from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import NutritionInfo from "./pages/NutritionInfo";
 import Home from "./pages/Home";
 import SearchResults from "./pages/SearchResults";
 import NotFound from "./pages/NotFound";
@@ -46,6 +47,7 @@ function App() {
                     <Route path="/login" element={<Login />} />
                     <Route path="/logout" element={<Logout />} />
                     <Route path="/register" element={<RegisterAndLogout />} />
+                    <Route path="/nutrition-info" element={<NutritionInfo />} />
                     <Route path="*" element={<NotFound />} />
 
                     <Route path="/product" element={<Product />} />

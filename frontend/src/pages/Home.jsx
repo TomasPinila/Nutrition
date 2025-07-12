@@ -1,6 +1,7 @@
 // For non-registered users too, Home is where the search functionality for products will be located
 import React from "react";
 import Search from "../components/Search";
+import { useNavigate } from "react-router-dom";
 import "../css/Home.css";
 
 import products1 from "../assets/products-vertical.jpg";
@@ -8,6 +9,10 @@ import products2 from "../assets/products-horizontal.jpg";
 import nutritionlabel from "../assets/nutrition-label.jpg";
 
 function Home() {
+    const navigate = useNavigate();
+    const handleLearnMoreClick = () => {
+        navigate("/nutrition-info");
+    };
     return (
         <>
             <header className="hero-section">
@@ -66,8 +71,10 @@ function Home() {
                                 Nutrients and their Percentage of Daily Value
                             </li>
                         </ul>
-                        {/* TODO: Create Page specifying evaluation */}
-                        <button href="#" className="info-button">
+                        <button
+                            onClick={handleLearnMoreClick}
+                            className="info-button"
+                        >
                             Learn More
                         </button>
                     </div>

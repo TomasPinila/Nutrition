@@ -119,6 +119,11 @@ function Product() {
                     ) : (
                         <img src={sample} alt="sample product image" />
                     )}
+                    <p>
+                        Disclaimer: Product images might not correctly reflect
+                        the actual product, rely on the product information
+                        instead.
+                    </p>
                 </div>
             </section>
             <section className="health-info">
@@ -205,7 +210,7 @@ function Product() {
                                 sugar types, and hydrogenated oils to look out
                                 for, and also the ones we use to evaluate the
                                 health score,{" "}
-                                <a className="anchor" href="#">
+                                <a className="anchor" href="/nutrition-info">
                                     click here
                                 </a>
                                 .
@@ -281,7 +286,7 @@ function Product() {
                                 accordance with the FDA's recommendation. If you
                                 want to check out the list of nutrients we take
                                 into account, along with their percentage of DV,{" "}
-                                <a className="anchor" href="#">
+                                <a className="anchor" href="/nutrition-info">
                                     click here
                                 </a>
                                 .

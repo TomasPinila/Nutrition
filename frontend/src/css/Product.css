@@ -26,9 +26,17 @@
 
 .product-image img {
     width: 100%;
-    height: 100%;
+    height: 90%;
     object-fit: contain; /* scale to fit without cropping */
     border-radius: 10px;
+}
+
+.product-image p {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 0.5rem;
+    font-style: italic;
 }
 
 .product-info {
