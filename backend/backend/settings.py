@@ -151,5 +151,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'api.User'
 
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+    "https://2d5e1686-02e1-44b9-a4ef-8d8ad9bfabc7.e1-us-east-azure.choreoapps.dev",
+    "http://localhost:3000",  # for local development
+]
 CORS_ALLOW_CREDENTIALS = True # Later to make more secure we should change settings 
