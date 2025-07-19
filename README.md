@@ -160,13 +160,19 @@ VITE_GOOGLE_SEARCH_ENGINE_ID=your_search_engine_id
 
 ### Home Page
 
+<img width="1877" height="854" alt="image" src="https://github.com/user-attachments/assets/893cd6d0-7156-4b11-940d-4e098f9b78ed" />
+
+
 _Product search interface with educational content_
 
 ### Product Analysis
 
+<img width="1248" height="893" alt="image" src="https://github.com/user-attachments/assets/76d3cef5-9036-4883-857f-5d7015b5a5dd" />
+
 _Detailed health evaluation with interactive components_
 
 ### Nutrition Guide
+<img width="1671" height="888" alt="image" src="https://github.com/user-attachments/assets/b4af63fb-033b-4066-9c44-bca6b7bc22f2" />
 
 _Comprehensive guide to understanding nutrition labels_
 
@@ -180,9 +186,9 @@ _Comprehensive guide to understanding nutrition labels_
 
 ## 📧 Contact
 
-**Your Name** - [your.email@example.com](mailto:your.email@example.com)
+**Tomas Pinilla** - [tomaspinilla0508@gmail.com](mailto:tomaspinilla0508@gmail.com)
 
-Project Link: [https://github.com/yourusername/nutrition](https://github.com/yourusername/nutrition)
+Project Link: https://github.com/TomasPinila/Nutrition
 
 ## 🙏 Acknowledgments
 
