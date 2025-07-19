@@ -17,3 +17,36 @@
     gap: 2rem;
     margin: 0 auto;
 }
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .top-section {
+        flex-direction: column;
+        gap: 1.5rem;
+        text-align: center;
+    }
+
+    .top-title {
+        font-size: 24px;
+    }
+
+    .products-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .top-section {
+        gap: 1rem;
+    }
+
+    .top-title {
+        font-size: 20px;
+    }
+
+    .products-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+}

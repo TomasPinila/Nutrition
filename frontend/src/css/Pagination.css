@@ -42,3 +42,20 @@
     cursor: not-allowed;
     border-radius: 0;
 }
+
+/* Mobile Responsive */
+@media (max-width: 480px) {
+    .pagination {
+        margin: 2rem auto;
+    }
+
+    .pagination-box {
+        width: 90%;
+        max-width: 300px;
+        height: 40px;
+    }
+
+    .pagination-box button {
+        font-size: 14px;
+    }
+}

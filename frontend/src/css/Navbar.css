@@ -43,3 +43,48 @@
 .header-link:hover {
     color: #fefb6d;
 }
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .header-nav {
+        padding: 0 2rem;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .header-logo {
+        font-size: 1.8rem;
+    }
+
+    .header-links {
+        gap: 2rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .header-link {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .header {
+        padding: 1rem 0;
+    }
+
+    .header-nav {
+        padding: 0 1rem;
+    }
+
+    .header-logo {
+        font-size: 1.6rem;
+    }
+
+    .header-links {
+        gap: 1.5rem;
+    }
+
+    .header-link {
+        font-size: 0.9rem;
+    }
+}

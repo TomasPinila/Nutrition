@@ -21,3 +21,16 @@ button {
     margin: 0 auto;
     padding: 3rem 4rem;
 }
+
+/* Mobile Responsive Base */
+@media (max-width: 768px) {
+    .container {
+        padding: 1.5rem 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 1rem 0.5rem;
+    }
+}

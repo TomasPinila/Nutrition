@@ -79,3 +79,27 @@
 .very-unhealthy-score {
     color: #f00004;
 }
+
+/* Mobile Responsive */
+@media (max-width: 480px) {
+    .card-title {
+        min-height: 100px;
+        padding: 0.6rem 1rem;
+    }
+
+    .card-title-name {
+        font-size: 14px;
+    }
+
+    .card-title-brand {
+        font-size: 11px;
+    }
+
+    .is-healthy {
+        padding: 0.6rem 1rem;
+    }
+
+    .is-healthy p {
+        font-size: 10px;
+    }
+}

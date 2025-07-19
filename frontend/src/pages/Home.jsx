@@ -1,5 +1,4 @@
-// For non-registered users too, Home is where the search functionality for products will be located
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Search from "../components/Search";
 import { useNavigate } from "react-router-dom";
 import "../css/Home.css";
@@ -10,9 +9,45 @@ import nutritionlabel from "../assets/nutrition-label.jpg";
 
 function Home() {
     const navigate = useNavigate();
+    const [currentSlide, setCurrentSlide] = useState(0);
+
+    const slides = [
+        {
+            image: nutritionlabel,
+            title: "FDA Nutrition Facts",
+            description:
+                "All nutritional information from USDA Food Data Central",
+        },
+        {
+            image: products1,
+            title: "Product Analysis",
+            description: "Comprehensive health evaluation of food products",
+        },
+        {
+            image: products2,
+            title: "Smart Health Scoring",
+            description:
+                "FDA-compliant analysis based on ingredients and nutrients",
+        },
+    ];
+
+    // Auto-rotate carousel
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrentSlide((prev) => (prev + 1) % slides.length);
+        }, 4000);
+
+        return () => clearInterval(timer);
+    }, [slides.length]);
+
     const handleLearnMoreClick = () => {
         navigate("/nutrition-info");
     };
+
+    const goToSlide = (index) => {
+        setCurrentSlide(index);
+    };
+
     return (
         <>
             <header className="hero-section">
@@ -21,6 +56,7 @@ function Home() {
                 </h1>
                 <Search variant="home" />
             </header>
+
             <section className="container features">
                 <div className="features-title">
                     <h2 className="features-title-1">
@@ -32,10 +68,12 @@ function Home() {
                     <h3 className="features-title-3">Your Health Goals</h3>
                 </div>
             </section>
+
             <section className="container info">
+                {/* Desktop Grid Layout */}
                 <div className="info-grid">
                     <div className="a">
-                        <img src={nutritionlabel} alt="Food Products Store" />
+                        <img src={nutritionlabel} alt="Nutrition Facts Label" />
                     </div>
                     <div className="b">
                         <h4 className="info-h4">
@@ -43,7 +81,7 @@ function Home() {
                         </h4>
                         <p>
                             All nutritional information is taken from the USDA
-                            Food Data Cental, from the U.S. Department of
+                            Food Data Central, from the U.S. Department of
                             Agriculture.
                         </p>
                     </div>
@@ -76,6 +114,75 @@ function Home() {
                             className="info-button"
                         >
                             Learn More
+                        </button>
+                    </div>
+                </div>
+
+                {/* Mobile Carousel Layout */}
+                <div className="mobile-image-carousel">
+                    <div className="carousel-container">
+                        <div
+                            className="carousel-track"
+                            style={{
+                                transform: `translateX(-${
+                                    currentSlide * 100
+                                }%)`,
+                            }}
+                        >
+                            {slides.map((slide, index) => (
+                                <div key={index} className="carousel-slide">
+                                    <img src={slide.image} alt={slide.title} />
+                                    <div className="carousel-overlay">
+                                        <h4>{slide.title}</h4>
+                                        <p>{slide.description}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="carousel-indicators">
+                        {slides.map((_, index) => (
+                            <button
+                                key={index}
+                                className={`carousel-dot ${
+                                    index === currentSlide ? "active" : ""
+                                }`}
+                                onClick={() => goToSlide(index)}
+                            />
+                        ))}
+                    </div>
+                </div>
+
+                {/* Mobile Text Content */}
+                <div className="mobile-text-content">
+                    <div className="mobile-info-section">
+                        <h4>Reliable Nutritional Data</h4>
+                        <p>
+                            All nutritional information comes from the USDA Food
+                            Data Central, the official source from the U.S.
+                            Department of Agriculture.
+                        </p>
+                    </div>
+
+                    <div className="mobile-info-section">
+                        <h4>FDA-Compliant Health Analysis</h4>
+                        <p>
+                            Our evaluation follows U.S. FDA recommendations for
+                            understanding and evaluating food products. We
+                            analyze:
+                        </p>
+                        <ul>
+                            <li>Calorie content per serving</li>
+                            <li>First 3 ingredient quality</li>
+                            <li>Essential nutrient percentages</li>
+                            <li>Nutrients to limit vs. encourage</li>
+                        </ul>
+                        <button
+                            onClick={handleLearnMoreClick}
+                            className="info-button"
+                        >
+                            Learn More About Our Process
                         </button>
                     </div>
                 </div>
