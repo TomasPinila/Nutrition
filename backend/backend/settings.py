@@ -156,10 +156,9 @@ AUTH_USER_MODEL = 'api.User'
 
 # CORS settings TODO - add your future Render frontend URL
 CORS_ALLOWED_ORIGINS = [
-    "https://2d5e1686-02e1-44b9-a4ef-8d8ad9bfabc7.e1-us-east-azure.choreoapps.dev",
     "http://localhost:3000",
     "http://localhost:5173",
-    # Add your Render frontend URL here after deployment
+    "https://nutrition-frontend-xern.onrender.com",
 ]
 CORS_ALLOW_CREDENTIALS = True # Later to make more secure we should change settings 
 STATIC_URL = '/static/'
