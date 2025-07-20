@@ -340,6 +340,7 @@ class ProductSearchView(APIView):
             product_id += 1
 
             product_nutrients = []
+            calorie_number = None  # Initialize calorie_number before the loop
 
             # Go through every nutrient and add needed info
             for nutrient in product.get("foodNutrients"):
@@ -366,11 +367,15 @@ class ProductSearchView(APIView):
                       
                     # add to product_nutrients dictionary
                     product_nutrients.append(n)
-            
-            # add calories to product_information
-            product_information["calories"] = calorie_number
+            if not calorie_number:
+                calorie_number = 'NA' # If no calories found, set to 0
 
             health_evaluation = healthEvaluation(calorie_number, product_nutrients, product_information["ingredients"])
+            
+            if calorie_number == 'NA':
+                calorie_number = 0
+            # add calories to product_information
+            product_information["calories"] = calorie_number
 
             product_information["health_evaluation"] = health_evaluation
 

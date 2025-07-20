@@ -200,6 +200,14 @@ def analyzeIngredients(ingredients):
 
 def analyzeCalories(calories):
     """Returns tuple with both category and numerical score"""
+
+    if isinstance(calories, str):
+        # Handle string input - maybe try to convert or return error
+        try:
+            calories = float(calories)
+        except ValueError:
+            return 0  
+        
     if calories <= 40:
         return 4
     elif calories <= 100:
@@ -330,7 +338,7 @@ def healthEvaluation(calories, nutrients, ingredients):
     nutrient_score = nutrients_analysis.get("score", 0) * nutrient_weight
     
     # Calorie Score (0-4 scale converted to 0-2)
-    calorie_score_map = { 4: "low", 3: "moderate", 2: "moderately high", 1: "high"}
+    calorie_score_map = { 4: "low", 3: "moderate", 2: "moderately high", 1: "high", 0: "good, no information about calories was found, so we assume it has no calories, which is good" }
 
     # Get calorie score analyis 
     calories_analysis = calorie_score_map[calories_analysis_score]
